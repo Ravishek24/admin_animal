@@ -840,13 +840,13 @@
                 setLoading(true);
                 try {
                     const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : `+91${phoneNumber}`;
-                    const response = await apiCall('/auth/send-otp', {
+                    const response = await apiCall('/admin/auth/login/send-otp', {
                         method: 'POST',
-                        body: JSON.stringify({ phoneNumber: formattedPhone })
+                        body: JSON.stringify({ phone_number: formattedPhone })
                     });
 
                     if (response.success) {
-                        setSessionUuid(response.sessionUuid);
+                        setSessionUuid(response.data.user_id);
                         setStep('otp');
                         setTimer(60); // 60 second timer
                         showAlert('OTP आपके मोबाइल पर भेजा गया है', 'success');
@@ -872,32 +872,21 @@
 
                 setLoading(true);
                 try {
-                    const response = await apiCall('/auth/verify-otp', {
+                    const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : `+91${phoneNumber}`;
+                    const response = await apiCall('/admin/auth/login/verify-otp', {
                         method: 'POST',
                         body: JSON.stringify({ 
-                            sessionUuid: sessionUuid,
-                            otp: otp 
+                            phone_number: formattedPhone,
+                            otp: otp,
+                            user_id: sessionUuid
                         })
                     });
 
                     if (response.success) {
-                        if (response.userExists) {
-                            // Check if user is admin
-                            const profileResponse = await apiCall('/auth/profile', {
-                                headers: { 'Authorization': `Bearer ${response.token}` }
-                            });
-
-                            if (profileResponse.success && profileResponse.user.role === 'admin') {
-                                localStorage.setItem('adminToken', response.token);
-                                localStorage.setItem('adminUser', JSON.stringify(response.user));
-                                showAlert('सफलतापूर्वक लॉगिन हो गए!', 'success');
-                                setTimeout(() => onLoginSuccess(response.user), 1000);
-                            } else {
-                                showAlert('आप एडमिन नहीं हैं। केवल एडमिन इस पैनल का उपयोग कर सकते हैं।', 'error');
-                            }
-                        } else {
-                            showAlert('आपका खाता नहीं मिला। कृपया एडमिन से संपर्क करें।', 'error');
-                        }
+                        localStorage.setItem('adminToken', response.data.token);
+                        localStorage.setItem('adminUser', JSON.stringify(response.data.user));
+                        showAlert('सफलतापूर्वक लॉगिन हो गए!', 'success');
+                        setTimeout(() => onLoginSuccess(response.data.user), 1000);
                     } else {
                         showAlert(response.message || 'गलत OTP', 'error');
                     }
@@ -917,13 +906,13 @@
                 setOtp('');
                 try {
                     const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : `+91${phoneNumber}`;
-                    const response = await apiCall('/auth/send-otp', {
+                    const response = await apiCall('/admin/auth/login/send-otp', {
                         method: 'POST',
-                        body: JSON.stringify({ phoneNumber: formattedPhone })
+                        body: JSON.stringify({ phone_number: formattedPhone })
                     });
 
                     if (response.success) {
-                        setSessionUuid(response.sessionUuid);
+                        setSessionUuid(response.data.user_id);
                         showAlert('नया OTP भेजा गया', 'success');
                     }
                 } catch (error) {
