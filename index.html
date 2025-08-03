@@ -846,7 +846,7 @@
                     });
 
                     if (response.success) {
-                        setSessionUuid(response.data.user_id);
+                        setSessionUuid(response.data.session_uuid);
                         setStep('otp');
                         setTimer(60); // 60 second timer
                         showAlert('OTP आपके मोबाइल पर भेजा गया है', 'success');
@@ -878,7 +878,7 @@
                         body: JSON.stringify({ 
                             phone_number: formattedPhone,
                             otp: otp,
-                            user_id: sessionUuid
+                            sessionUuid: sessionUuid
                         })
                     });
 
@@ -912,7 +912,7 @@
                     });
 
                     if (response.success) {
-                        setSessionUuid(response.data.user_id);
+                        setSessionUuid(response.data.session_uuid);
                         showAlert('नया OTP भेजा गया', 'success');
                     }
                 } catch (error) {
