@@ -1166,17 +1166,43 @@
             const handleCreateSupplement = async (formData) => {
                 try {
                     setLoading(true);
-                    const response = await apiCall('/admin/supplements', {
-                        method: 'POST',
-                        body: JSON.stringify(formData)
+                    
+                    // Create FormData object for multipart upload
+                    const multipartData = new FormData();
+                    
+                    // Add all form fields
+                    Object.keys(formData).forEach(key => {
+                        if (key !== 'images') {
+                            multipartData.append(key, formData[key]);
+                        }
                     });
                     
-                    if (response.success) {
+                    // Add images if any
+                    if (formData.images && formData.images.length > 0) {
+                        for (let i = 0; i < formData.images.length; i++) {
+                            multipartData.append('images', formData.images[i]);
+                        }
+                    }
+                    
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch(`${API_BASE_URL}/admin/supplements`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: multipartData
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
                         showAlert('उत्पाद सफलतापूर्वक बनाया गया!');
                         loadSupplements();
                         closeModal();
+                    } else {
+                        showAlert(result.message || 'उत्पाद बनाने में समस्या आई', 'error');
                     }
                 } catch (error) {
+                    console.error('Create supplement error:', error);
                     showAlert('उत्पाद बनाने में समस्या आई', 'error');
                 } finally {
                     setLoading(false);
@@ -1371,6 +1397,7 @@
                             <table className="table">
                                 <thead>
                                     <tr>
+                                        <th>छवि</th>
                                         <th>उत्पाद का नाम</th>
                                         <th>ब्रांड</th>
                                         <th>मूल्य</th>
@@ -1383,6 +1410,56 @@
                                 <tbody>
                                     {data.supplements.map(product => (
                                         <tr key={product.supplement_id}>
+                                            <td>
+                                                {product.images && product.images.length > 0 ? (
+                                                    <div style={{position: 'relative'}}>
+                                                        <img 
+                                                            src={product.images.find(img => img.is_primary)?.image_url || product.images[0].image_url} 
+                                                            alt={product.title}
+                                                            style={{
+                                                                width: '50px',
+                                                                height: '50px',
+                                                                objectFit: 'cover',
+                                                                borderRadius: '5px',
+                                                                border: '1px solid #ddd'
+                                                            }}
+                                                        />
+                                                        {product.images.length > 1 && (
+                                                            <div style={{
+                                                                position: 'absolute',
+                                                                top: '-5px',
+                                                                right: '-5px',
+                                                                background: '#ff3b3b',
+                                                                color: 'white',
+                                                                borderRadius: '50%',
+                                                                width: '20px',
+                                                                height: '20px',
+                                                                fontSize: '10px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 'bold'
+                                                            }}>
+                                                                {product.images.length}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        backgroundColor: '#f0f0f0',
+                                                        borderRadius: '5px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        color: '#999',
+                                                        fontSize: '12px'
+                                                    }}>
+                                                        कोई छवि नहीं
+                                                    </div>
+                                                )}
+                                            </td>
                                             <td>{product.title}</td>
                                             <td>{product.brand || 'N/A'}</td>
                                             <td>₹{product.price}</td>
@@ -1409,8 +1486,9 @@
                                                     className="btn btn-success" 
                                                     style={{marginRight: '5px', padding: '6px 10px'}}
                                                     onClick={() => openModal('uploadImages', product)}
+                                                    title="अतिरिक्त छवियां जोड़ें"
                                                 >
-                                                    <i className="fas fa-image"></i>
+                                                    <i className="fas fa-plus"></i>
                                                 </button>
                                                 <button 
                                                     className="btn btn-danger"
@@ -1426,21 +1504,21 @@
                             </table>
 
                             {pagination.totalPages > 1 && (
-                                <div className="pagination">
-                                    <button 
-                                        disabled={pagination.currentPage === 1}
-                                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
-                                    >
+                            <div className="pagination">
+                                <button 
+                                    disabled={pagination.currentPage === 1}
+                                    onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                                >
                                         पिछला
-                                    </button>
+                                </button>
                                     <span>पेज {pagination.currentPage} / {pagination.totalPages}</span>
-                                    <button 
-                                        disabled={pagination.currentPage === pagination.totalPages}
-                                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
-                                    >
+                                <button 
+                                    disabled={pagination.currentPage === pagination.totalPages}
+                                    onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                                >
                                         अगला
-                                    </button>
-                                </div>
+                                </button>
+                            </div>
                             )}
                         </>
                     )}
@@ -1621,6 +1699,17 @@
                                     <div className="form-group" style={{gridColumn: '1 / -1'}}>
                                         <label className="form-label">सामग्री</label>
                                         <textarea name="ingredients" className="form-control" rows="3" placeholder="सामग्री की सूची"></textarea>
+                                    </div>
+                                    <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                                        <label className="form-label">उत्पाद की छवियां</label>
+                                        <input 
+                                            type="file" 
+                                            name="images" 
+                                            className="form-control" 
+                                            accept="image/*" 
+                                            multiple 
+                                        />
+                                        <small style={{color: '#666', fontSize: '12px'}}>अधिकतम 5 छवियां, प्रत्येक 10MB से कम। पहली छवि मुख्य छवि होगी।</small>
                                     </div>
                                 </div>
                                 <div style={{marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end'}}>
