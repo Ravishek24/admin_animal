@@ -1167,20 +1167,13 @@
                 try {
                     setLoading(true);
                     
-                    // Create FormData object for multipart upload
-                    const multipartData = new FormData();
-                    
-                    // Add all form fields
-                    Object.keys(formData).forEach(key => {
-                        if (key !== 'images') {
-                            multipartData.append(key, formData[key]);
-                        }
-                    });
-                    
-                    // Add images if any
-                    if (formData.images && formData.images.length > 0) {
-                        for (let i = 0; i < formData.images.length; i++) {
-                            multipartData.append('images', formData.images[i]);
+                    // Debug: Log form data
+                    console.log('Form data being sent:');
+                    for (let [key, value] of formData.entries()) {
+                        if (key === 'images') {
+                            console.log(`${key}:`, value.name, value.size, 'bytes');
+                        } else {
+                            console.log(`${key}:`, value);
                         }
                     }
                     
@@ -1190,7 +1183,7 @@
                         headers: {
                             'Authorization': `Bearer ${token}`
                         },
-                        body: multipartData
+                        body: formData
                     });
                     
                     const result = await response.json();
@@ -1636,10 +1629,9 @@
                 const handleSubmit = async (e) => {
                     e.preventDefault();
                     const formData = new FormData(e.target);
-                    const data = Object.fromEntries(formData.entries());
                     
                     if (modalContent.type === 'addProduct' || modalContent.type === 'editProduct') {
-                        await handleCreateSupplement(data);
+                        await handleCreateSupplement(formData);
                     }
                 };
 
