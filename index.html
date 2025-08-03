@@ -1,197 +1,1912 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Party Details Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>पशुपालन मंच - Admin Panel</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* Login Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff3b3b 0%, #d32f2f 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo i {
+            font-size: 60px;
+            color: #ff3b3b;
+            margin-bottom: 15px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ff3b3b;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,59,59,0.1);
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 8px;
+        }
+
+        .btn {
+            padding: 15px 30px;
             border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff3b3b 0%, #d32f2f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,59,59,0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,59,59,0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .resend-otp {
+            color: #ff3b3b;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .resend-otp:hover {
+            color: #d32f2f;
+        }
+
+        .timer {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Admin Panel Styles (from previous version) */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #ff3b3b 0%, #d32f2f 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .admin-title {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #ffcc00;
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: #ffcc00;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+        }
+
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #666;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background: #f0f0f0;
+            color: #ff3b3b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ff3b3b;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-profile:hover {
+            background: #f0f0f0;
+        }
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+            background: #ff3b3b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .content-area {
+            padding: 30px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.users { background: #4CAF50; }
+        .stat-icon.animals { background: #ff9800; }
+        .stat-icon.products { background: #2196F3; }
+        .stat-icon.revenue { background: #9C27B0; }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .stat-change.positive { color: #4CAF50; }
+        .stat-change.negative { color: #f44336; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
             border-radius: 4px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-        button:hover {
-            background-color: #45a049;
+
+        .pagination button:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination button.active {
+            background: #ff3b3b;
+            color: white;
+            border-color: #ff3b3b;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .recent-activities {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .activity-icon.user { background: #4CAF50; }
+        .activity-icon.animal { background: #ff9800; }
+        .activity-icon.product { background: #2196F3; }
+        .activity-icon.order { background: #9C27B0; }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar-header .logo-text,
+            .sidebar-header .admin-title,
+            .nav-section-title,
+            .nav-item span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .topbar {
+                padding: 15px 20px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .login-card {
+                padding: 30px;
+            }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <form id="partyForm">
-        <div class="form-group">
-            <label for="partyName">Name of Party</label>
-            <input type="text" id="partyName" name="partyName" required>
-        </div>
+    <div id="root"></div>
 
-        <div class="form-group">
-            <label for="mobileNo">Mobile No.</label>
-            <input type="tel" id="mobileNo" name="mobileNo" pattern="[0-9]{10}" required>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-        <div class="form-group">
-            <label for="state">State</label>
-            <select id="state" name="state" required>
-                <option value="">Select State</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="district">District</label>
-            <select id="district" name="district" required>
-                <option value="">Select District</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="tehsil">Tehsil</label>
-            <select id="tehsil" name="tehsil" required>
-                <option value="">Select Tehsil</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="customerType">Type of Customer</label>
-            <select id="customerType" name="customerType" required>
-                <option value="">Select Type</option>
-                <option value="retail">Retail</option>
-                <option value="wholesale">Wholesale</option>
-                <!-- Add more options as needed -->
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="">Select Category</option>
-                <option value="retail">Retail</option>
-                <option value="wholesale">Wholesale</option>
-                <!-- Add your 500+ options here -->
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="productInterest">Product Interest</label>
-            <input type="text" id="productInterest" name="productInterest">
-        </div>
-
-        <div class="form-group">
-            <label for="salesPerson">Sales Person</label>
-            <input type="text" id="salesPerson" name="salesPerson">
-        </div>
-
-        <div class="form-group">
-            <label for="review">Review</label>
-            <textarea id="review" name="review" rows="4"></textarea>
-        </div>
-
-        <button type="submit">Submit</button>
-    </form>
-
-    <script>
-        let locationData = {};
+        // API Configuration
+        const API_BASE_URL = 'https://api.sociamosaic.com/api';
         
-        // Fetch location data from Google Apps Script
-        fetch('https://script.google.com/macros/s/AKfycbx0VBEyfQBE5hI5FiCHU_GvVarvslhIKH4LrGDR7iUPnnWwZWDtW6QitYwZAGzsZU-R/exec')
-          .then(response => response.json())
-          .then(data => {
-            locationData = data;
-            // Populate state dropdown
-            const stateSelect = document.getElementById('state');
-            Object.keys(locationData).forEach(state => {
-                const option = new Option(state, state);
-                stateSelect.add(option);
-            });
-          });
+        // API Helper Functions
+        const apiCall = async (endpoint, options = {}) => {
+            const token = localStorage.getItem('adminToken');
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            };
 
-        // Populate state dropdown
-        const stateSelect = document.getElementById('state');
-        Object.keys(locationData).forEach(state => {
-            const option = new Option(state, state);
-            stateSelect.add(option);
-        });
-
-        // Update districts when state changes
-        stateSelect.addEventListener('change', function() {
-            const districtSelect = document.getElementById('district');
-            const tehsilSelect = document.getElementById('tehsil');
-            
-            // Clear existing options
-            districtSelect.innerHTML = '<option value="">Select District</option>';
-            tehsilSelect.innerHTML = '<option value="">Select Tehsil</option>';
-            
-            if (this.value) {
-                const districts = Object.keys(locationData[this.value]);
-                districts.forEach(district => {
-                    const option = new Option(district, district);
-                    districtSelect.add(option);
-                });
-            }
-        });
-
-        // Update tehsils when district changes
-        document.getElementById('district').addEventListener('change', function() {
-            const tehsilSelect = document.getElementById('tehsil');
-            const selectedState = document.getElementById('state').value;
-            
-            // Clear existing options
-            tehsilSelect.innerHTML = '<option value="">Select Tehsil</option>';
-            
-            if (this.value) {
-                const tehsils = locationData[selectedState][this.value];
-                tehsils.forEach(tehsil => {
-                    const option = new Option(tehsil, tehsil);
-                    tehsilSelect.add(option);
-                });
-            }
-        });
-
-        // Form submission handler
-        document.getElementById('partyForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const formObject = {};
-            formData.forEach((value, key) => {
-                formObject[key] = value;
-            });
-            
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbx0VBEyfQBE5hI5FiCHU_GvVarvslhIKH4LrGDR7iUPnnWwZWDtW6QitYwZAGzsZU-R/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    ...options,
                     headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formObject)
+                        ...defaultHeaders,
+                        ...options.headers
+                    }
                 });
-                
-                alert('Data submitted successfully!');
-                this.reset();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
             } catch (error) {
-                alert('Error submitting data: ' + error.message);
+                console.error('API call failed:', error);
+                throw error;
             }
-        });
+        };
+
+        // Login Component
+        function AdminLogin({ onLoginSuccess }) {
+            const [step, setStep] = useState('phone'); // 'phone', 'otp'
+            const [phoneNumber, setPhoneNumber] = useState('');
+            const [otp, setOtp] = useState('');
+            const [sessionUuid, setSessionUuid] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [alert, setAlert] = useState(null);
+            const [timer, setTimer] = useState(0);
+
+            // Show alert message
+            const showAlert = (message, type = 'success') => {
+                setAlert({ message, type });
+                setTimeout(() => setAlert(null), 5000);
+            };
+
+            // Start timer for OTP resend
+            useEffect(() => {
+                let interval;
+                if (timer > 0) {
+                    interval = setInterval(() => {
+                        setTimer(timer - 1);
+                    }, 1000);
+                }
+                return () => clearInterval(interval);
+            }, [timer]);
+
+            // Send OTP
+            const handleSendOTP = async (e) => {
+                e.preventDefault();
+                
+                if (!phoneNumber.trim()) {
+                    showAlert('कृपया मोबाइल नंबर दर्ज करें', 'error');
+                    return;
+                }
+
+                // Validate phone number format
+                if (!/^(\+91)?[6-9]\d{9}$/.test(phoneNumber.replace(/\s/g, ''))) {
+                    showAlert('कृपया वैध मोबाइल नंबर दर्ज करें', 'error');
+                    return;
+                }
+
+                setLoading(true);
+                try {
+                    const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : `+91${phoneNumber}`;
+                    const response = await apiCall('/auth/send-otp', {
+                        method: 'POST',
+                        body: JSON.stringify({ phoneNumber: formattedPhone })
+                    });
+
+                    if (response.success) {
+                        setSessionUuid(response.sessionUuid);
+                        setStep('otp');
+                        setTimer(60); // 60 second timer
+                        showAlert('OTP आपके मोबाइल पर भेजा गया है', 'success');
+                    } else {
+                        showAlert(response.message || 'OTP भेजने में समस्या आई', 'error');
+                    }
+                } catch (error) {
+                    console.error('Send OTP error:', error);
+                    showAlert('OTP भेजने में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Verify OTP
+            const handleVerifyOTP = async (e) => {
+                e.preventDefault();
+                
+                if (!otp.trim() || otp.length !== 6) {
+                    showAlert('कृपया 6 अंकों का OTP दर्ज करें', 'error');
+                    return;
+                }
+
+                setLoading(true);
+                try {
+                    const response = await apiCall('/auth/verify-otp', {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            sessionUuid: sessionUuid,
+                            otp: otp 
+                        })
+                    });
+
+                    if (response.success) {
+                        if (response.userExists) {
+                            // Check if user is admin
+                            const profileResponse = await apiCall('/auth/profile', {
+                                headers: { 'Authorization': `Bearer ${response.token}` }
+                            });
+
+                            if (profileResponse.success && profileResponse.user.role === 'admin') {
+                                localStorage.setItem('adminToken', response.token);
+                                localStorage.setItem('adminUser', JSON.stringify(response.user));
+                                showAlert('सफलतापूर्वक लॉगिन हो गए!', 'success');
+                                setTimeout(() => onLoginSuccess(response.user), 1000);
+                            } else {
+                                showAlert('आप एडमिन नहीं हैं। केवल एडमिन इस पैनल का उपयोग कर सकते हैं।', 'error');
+                            }
+                        } else {
+                            showAlert('आपका खाता नहीं मिला। कृपया एडमिन से संपर्क करें।', 'error');
+                        }
+                    } else {
+                        showAlert(response.message || 'गलत OTP', 'error');
+                    }
+                } catch (error) {
+                    console.error('Verify OTP error:', error);
+                    showAlert('OTP सत्यापन में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Resend OTP
+            const handleResendOTP = async () => {
+                if (timer > 0) return;
+                
+                setTimer(60);
+                setOtp('');
+                try {
+                    const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : `+91${phoneNumber}`;
+                    const response = await apiCall('/auth/send-otp', {
+                        method: 'POST',
+                        body: JSON.stringify({ phoneNumber: formattedPhone })
+                    });
+
+                    if (response.success) {
+                        setSessionUuid(response.sessionUuid);
+                        showAlert('नया OTP भेजा गया', 'success');
+                    }
+                } catch (error) {
+                    showAlert('OTP दोबारा भेजने में समस्या आई', 'error');
+                }
+            };
+
+            return (
+                <div className="login-container">
+                    <div className="login-card">
+                        <div className="login-logo">
+                            <i className="fas fa-cow"></i>
+                            <div className="login-title">पशुपालन मंच</div>
+                            <div className="login-subtitle">Admin Panel</div>
+                        </div>
+
+                        {alert && (
+                            <div className={`alert alert-${alert.type}`}>
+                                {alert.message}
+                            </div>
+                        )}
+
+                        {step === 'phone' ? (
+                            <form onSubmit={handleSendOTP}>
+                                <div className="form-group">
+                                    <label className="form-label">मोबाइल नंबर</label>
+                                    <input
+                                        type="tel"
+                                        className="form-control"
+                                        placeholder="10 अंकों का मोबाइल नंबर"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        maxLength="10"
+                                        disabled={loading}
+                                    />
+                                </div>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? (
+                                        <>
+                                            <div className="spinner"></div>
+                                            OTP भेजा जा रहा है...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-mobile-alt"></i>
+                                            OTP भेजें
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleVerifyOTP}>
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        OTP दर्ज करें
+                                        <div style={{fontSize: '12px', color: '#666', marginTop: '5px'}}>
+                                            {phoneNumber} पर भेजा गया
+                                        </div>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control otp-input"
+                                        placeholder="6 अंकों का OTP"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        maxLength="6"
+                                        disabled={loading}
+                                        autoFocus
+                                    />
+                                </div>
+                                
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? (
+                                        <>
+                                            <div className="spinner"></div>
+                                            सत्यापन हो रहा है...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-check"></i>
+                                            OTP सत्यापित करें
+                                        </>
+                                    )}
+                                </button>
+
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    onClick={() => setStep('phone')}
+                                    disabled={loading}
+                                >
+                                    <i className="fas fa-arrow-left"></i>
+                                    वापस जाएं
+                                </button>
+
+                                <div style={{textAlign: 'center', marginTop: '20px'}}>
+                                    {timer > 0 ? (
+                                        <div className="timer">
+                                            OTP दोबारा भेजें: {timer} सेकंड में
+                                        </div>
+                                    ) : (
+                                        <span className="resend-otp" onClick={handleResendOTP}>
+                                            OTP दोबारा भेजें
+                                        </span>
+                                    )}
+                                </div>
+                            </form>
+                        )}
+
+                        <div className="login-footer">
+                            <div>पशुपालन मंच Admin Panel</div>
+                            <div>केवल अधिकृत व्यवस्थापकों के लिए</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Main Admin Panel Component
+        function AdminPanel({ user, onLogout }) {
+            const [activeSection, setActiveSection] = useState('dashboard');
+            const [showModal, setShowModal] = useState(false);
+            const [modalContent, setModalContent] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [filterStatus, setFilterStatus] = useState('all');
+            const [loading, setLoading] = useState(false);
+            const [alert, setAlert] = useState(null);
+            const [data, setData] = useState({
+                users: [],
+                animals: [],
+                supplements: [],
+                orders: [],
+                stats: {
+                    totalUsers: 0,
+                    activeAnimals: 0,
+                    totalProducts: 0,
+                    monthlyRevenue: 0
+                }
+            });
+            const [pagination, setPagination] = useState({
+                currentPage: 1,
+                totalPages: 1,
+                totalItems: 0,
+                itemsPerPage: 10
+            });
+
+            // Show alert message
+            const showAlert = (message, type = 'success') => {
+                setAlert({ message, type });
+                setTimeout(() => setAlert(null), 5000);
+            };
+
+            // Load data based on active section
+            useEffect(() => {
+                loadData();
+            }, [activeSection, searchTerm, filterStatus, pagination.currentPage]);
+
+            const loadData = async () => {
+                setLoading(true);
+                try {
+                    switch (activeSection) {
+                        case 'dashboard':
+                            await loadDashboardData();
+                            break;
+                        case 'animals':
+                            await loadAnimals();
+                            break;
+                        case 'products':
+                            await loadSupplements();
+                            break;
+                        case 'orders':
+                            await loadOrders();
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showAlert('डेटा लोड करने में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const loadDashboardData = async () => {
+                try {
+                    const [supplementsRes, animalsRes] = await Promise.all([
+                        apiCall('/admin/supplements?limit=1'),
+                        apiCall('/animals?limit=1')
+                    ]);
+
+                    setData(prev => ({
+                        ...prev,
+                        stats: {
+                            totalUsers: 1247,
+                            activeAnimals: animalsRes.data?.length || 0,
+                            totalProducts: supplementsRes.pagination?.totalItems || 0,
+                            monthlyRevenue: 245780
+                        }
+                    }));
+                } catch (error) {
+                    console.error('Error loading dashboard:', error);
+                }
+            };
+
+            const loadAnimals = async () => {
+                try {
+                    const response = await apiCall('/animals');
+                    setData(prev => ({ ...prev, animals: response.data || [] }));
+                } catch (error) {
+                    console.error('Error loading animals:', error);
+                }
+            };
+
+            const loadSupplements = async () => {
+                try {
+                    const params = new URLSearchParams({
+                        page: pagination.currentPage,
+                        limit: pagination.itemsPerPage,
+                        ...(searchTerm && { search: searchTerm }),
+                        ...(filterStatus !== 'all' && { status: filterStatus })
+                    });
+
+                    const response = await apiCall(`/admin/supplements?${params}`);
+                    setData(prev => ({ ...prev, supplements: response.data || [] }));
+                    if (response.pagination) {
+                        setPagination(response.pagination);
+                    }
+                } catch (error) {
+                    console.error('Error loading supplements:', error);
+                }
+            };
+
+            const loadOrders = async () => {
+                try {
+                    const response = await apiCall('/admin/orders');
+                    setData(prev => ({ ...prev, orders: response.data || [] }));
+                } catch (error) {
+                    console.error('Error loading orders:', error);
+                }
+            };
+
+            const openModal = (content, extraData = null) => {
+                setModalContent({ type: content, data: extraData });
+                setShowModal(true);
+            };
+
+            const closeModal = () => {
+                setShowModal(false);
+                setModalContent(null);
+            };
+
+            const handleCreateSupplement = async (formData) => {
+                try {
+                    setLoading(true);
+                    const response = await apiCall('/admin/supplements', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.success) {
+                        showAlert('उत्पाद सफलतापूर्वक बनाया गया!');
+                        loadSupplements();
+                        closeModal();
+                    }
+                } catch (error) {
+                    showAlert('उत्पाद बनाने में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleDeleteSupplement = async (id) => {
+                if (!confirm('क्या आप वाकई इस उत्पाद को हटाना चाहते हैं?')) return;
+                
+                try {
+                    setLoading(true);
+                    const response = await apiCall(`/admin/supplements/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.success) {
+                        showAlert('उत्पाद सफलतापूर्वक हटाया गया!');
+                        loadSupplements();
+                    }
+                } catch (error) {
+                    showAlert('उत्पाद हटाने में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleImageUpload = async (supplementId, files) => {
+                try {
+                    setLoading(true);
+                    const formData = new FormData();
+                    for (let file of files) {
+                        formData.append('images', file);
+                    }
+
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch(`${API_BASE_URL}/admin/supplements/${supplementId}/images`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert('छवियां सफलतापूर्वक अपलोड हुईं!');
+                        loadSupplements();
+                        closeModal();
+                    }
+                } catch (error) {
+                    showAlert('छवि अपलोड में समस्या आई', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const renderDashboard = () => (
+                <div>
+                    {alert && (
+                        <div className={`alert alert-${alert.type}`}>
+                            {alert.message}
+                        </div>
+                    )}
+                    
+                    <div className="dashboard-grid">
+                        <div className="stat-card">
+                            <div className="stat-header">
+                                <div className="stat-icon users">
+                                    <i className="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div className="stat-value">{data.stats.totalUsers.toLocaleString()}</div>
+                            <div className="stat-label">कुल उपयोगकर्ता</div>
+                            <div className="stat-change positive">
+                                <i className="fas fa-arrow-up"></i>
+                                +12% इस महीने
+                            </div>
+                        </div>
+
+                        <div className="stat-card">
+                            <div className="stat-header">
+                                <div className="stat-icon animals">
+                                    <i className="fas fa-cow"></i>
+                                </div>
+                            </div>
+                            <div className="stat-value">{data.stats.activeAnimals}</div>
+                            <div className="stat-label">सक्रिय पशु लिस्टिंग</div>
+                            <div className="stat-change positive">
+                                <i className="fas fa-arrow-up"></i>
+                                +8% इस सप्ताह
+                            </div>
+                        </div>
+
+                        <div className="stat-card">
+                            <div className="stat-header">
+                                <div className="stat-icon products">
+                                    <i className="fas fa-box"></i>
+                                </div>
+                            </div>
+                            <div className="stat-value">{data.stats.totalProducts}</div>
+                            <div className="stat-label">कुल उत्पाद</div>
+                            <div className="stat-change positive">
+                                <i className="fas fa-arrow-up"></i>
+                                +5 नए उत्पाद
+                            </div>
+                        </div>
+
+                        <div className="stat-card">
+                            <div className="stat-header">
+                                <div className="stat-icon revenue">
+                                    <i className="fas fa-rupee-sign"></i>
+                                </div>
+                            </div>
+                            <div className="stat-value">₹{data.stats.monthlyRevenue.toLocaleString()}</div>
+                            <div className="stat-label">मासिक आय</div>
+                            <div className="stat-change positive">
+                                <i className="fas fa-arrow-up"></i>
+                                +15% पिछले महीने से
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="charts-grid">
+                        <div className="chart-card">
+                            <h3 className="chart-title">मासिक बिक्री रिपोर्ट</h3>
+                            <canvas id="salesChart" width="400" height="200"></canvas>
+                        </div>
+                        
+                        <div className="recent-activities">
+                            <h3 className="chart-title">हाल की गतिविधियां</h3>
+                            <div className="activity-item">
+                                <div className="activity-icon user">
+                                    <i className="fas fa-user-plus"></i>
+                                </div>
+                                <div className="activity-content">
+                                    <div className="activity-text">नया उत्पाद जोड़ा गया</div>
+                                    <div className="activity-time">2 मिनट पहले</div>
+                                </div>
+                            </div>
+                            <div className="activity-item">
+                                <div className="activity-icon animal">
+                                    <i className="fas fa-cow"></i>
+                                </div>
+                                <div className="activity-content">
+                                    <div className="activity-text">नई पशु लिस्टिंग</div>
+                                    <div className="activity-time">15 मिनट पहले</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderSupplements = () => (
+                <div className="table-card">
+                    <div className="table-header">
+                        <h3 className="table-title">उत्पाद प्रबंधन</h3>
+                        <button className="btn btn-primary" onClick={() => openModal('addProduct')}>
+                            <i className="fas fa-plus"></i> नया उत्पाद जोड़ें
+                        </button>
+                    </div>
+
+                    {alert && (
+                        <div className={`alert alert-${alert.type}`}>
+                            {alert.message}
+                        </div>
+                    )}
+                    
+                    <div style={{padding: '20px'}}>
+                        <div className="search-bar">
+                            <input 
+                                type="text" 
+                                className="search-input" 
+                                placeholder="उत्पाद खोजें..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <select className="filter-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                                <option value="all">सभी स्थितियां</option>
+                                <option value="Available">उपलब्ध</option>
+                                <option value="Out of Stock">स्टॉक में नहीं</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">
+                            <i className="fas fa-spinner fa-spin"></i> लोड हो रहा है...
+                        </div>
+                    ) : (
+                        <>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>उत्पाद का नाम</th>
+                                        <th>ब्रांड</th>
+                                        <th>मूल्य</th>
+                                        <th>स्टॉक</th>
+                                        <th>स्थिति</th>
+                                        <th>तारीख</th>
+                                        <th>कार्य</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.supplements.map(product => (
+                                        <tr key={product.supplement_id}>
+                                            <td>{product.title}</td>
+                                            <td>{product.brand || 'N/A'}</td>
+                                            <td>₹{product.price}</td>
+                                            <td>
+                                                <span className={product.stock_quantity === 0 ? 'status-badge status-inactive' : 'status-badge status-active'}>
+                                                    {product.stock_quantity} इकाई
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className={`status-badge ${product.status === 'Available' ? 'status-active' : 'status-inactive'}`}>
+                                                    {product.status === 'Available' ? 'उपलब्ध' : 'स्टॉक में नहीं'}
+                                                </span>
+                                            </td>
+                                            <td>{new Date(product.date_added).toLocaleDateString('hi-IN')}</td>
+                                            <td>
+                                                <button 
+                                                    className="btn btn-warning" 
+                                                    style={{marginRight: '5px', padding: '6px 10px'}}
+                                                    onClick={() => openModal('editProduct', product)}
+                                                >
+                                                    <i className="fas fa-edit"></i>
+                                                </button>
+                                                <button 
+                                                    className="btn btn-success" 
+                                                    style={{marginRight: '5px', padding: '6px 10px'}}
+                                                    onClick={() => openModal('uploadImages', product)}
+                                                >
+                                                    <i className="fas fa-image"></i>
+                                                </button>
+                                                <button 
+                                                    className="btn btn-danger"
+                                                    style={{padding: '6px 10px'}}
+                                                    onClick={() => handleDeleteSupplement(product.supplement_id)}
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            {pagination.totalPages > 1 && (
+                                <div className="pagination">
+                                    <button 
+                                        disabled={pagination.currentPage === 1}
+                                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                                    >
+                                        पिछला
+                                    </button>
+                                    <span>पेज {pagination.currentPage} / {pagination.totalPages}</span>
+                                    <button 
+                                        disabled={pagination.currentPage === pagination.totalPages}
+                                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                                    >
+                                        अगला
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+
+            const renderAnimals = () => (
+                <div className="table-card">
+                    <div className="table-header">
+                        <h3 className="table-title">पशु प्रबंधन</h3>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">
+                            <i className="fas fa-spinner fa-spin"></i> लोड हो रहा है...
+                        </div>
+                    ) : (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>शीर्षक</th>
+                                    <th>मूल्य</th>
+                                    <th>दूध उत्पादन</th>
+                                    <th>स्थान</th>
+                                    <th>स्थिति</th>
+                                    <th>तारीख</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.animals.map(animal => (
+                                    <tr key={animal.animal_id}>
+                                        <td>{animal.title}</td>
+                                        <td>₹{animal.price?.toLocaleString()}</td>
+                                        <td>{animal.milk_yield_per_day} लीटर/दिन</td>
+                                        <td>{animal.location_address}</td>
+                                        <td>
+                                            <span className="status-badge status-active">
+                                                {animal.status}
+                                            </span>
+                                        </td>
+                                        <td>{new Date(animal.listing_date).toLocaleDateString('hi-IN')}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            );
+
+            const renderOrders = () => (
+                <div className="table-card">
+                    <div className="table-header">
+                        <h3 className="table-title">ऑर्डर प्रबंधन</h3>
+                        <button className="btn btn-primary">
+                            <i className="fas fa-download"></i> रिपोर्ट डाउनलोड करें
+                        </button>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">
+                            <i className="fas fa-spinner fa-spin"></i> लोड हो रहा है...
+                        </div>
+                    ) : (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ऑर्डर ID</th>
+                                    <th>उपयोगकर्ता</th>
+                                    <th>प्रकार</th>
+                                    <th>कुल राशि</th>
+                                    <th>स्थिति</th>
+                                    <th>तारीख</th>
+                                    <th>कार्य</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.orders.map(order => (
+                                    <tr key={order.order_id}>
+                                        <td>#{order.order_id.toString().padStart(4, '0')}</td>
+                                        <td>{order.User?.full_name || 'N/A'}</td>
+                                        <td>{order.order_type}</td>
+                                        <td>₹{order.total_amount}</td>
+                                        <td>
+                                            <span className={`status-badge ${
+                                                order.status === 'paid' ? 'status-active' : 
+                                                order.status === 'pending' ? 'status-pending' : 'status-inactive'
+                                            }`}>
+                                                {order.status === 'paid' ? 'भुगतान हो गया' : 
+                                                 order.status === 'pending' ? 'लंबित' : order.status}
+                                            </span>
+                                        </td>
+                                        <td>{new Date(order.created_at).toLocaleDateString('hi-IN')}</td>
+                                        <td>
+                                            <button className="btn btn-success" style={{marginRight: '5px', padding: '6px 10px'}}>
+                                                <i className="fas fa-eye"></i>
+                                            </button>
+                                            <button className="btn btn-warning" style={{padding: '6px 10px'}}>
+                                                <i className="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            );
+
+            const renderModal = () => {
+                if (!showModal || !modalContent) return null;
+
+                let modalTitle = '';
+                let modalBody = null;
+
+                const handleSubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    if (modalContent.type === 'addProduct' || modalContent.type === 'editProduct') {
+                        await handleCreateSupplement(data);
+                    }
+                };
+
+                switch (modalContent.type) {
+                    case 'addProduct':
+                        modalTitle = 'नया उत्पाद जोड़ें';
+                        modalBody = (
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label className="form-label">उत्पाद का नाम *</label>
+                                        <input type="text" name="title" className="form-control" placeholder="उत्पाद का नाम दर्ज करें" required />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">ब्रांड</label>
+                                        <input type="text" name="brand" className="form-control" placeholder="ब्रांड का नाम" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">मूल्य (₹) *</label>
+                                        <input type="number" name="price" className="form-control" placeholder="जैसे: 850" step="0.01" required />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">स्टॉक मात्रा *</label>
+                                        <input type="number" name="stock_quantity" className="form-control" placeholder="जैसे: 100" required />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">लक्षित पशु</label>
+                                        <input type="text" name="target_animal" className="form-control" placeholder="जैसे: गाय, भैंस" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">वजन/आकार</label>
+                                        <input type="text" name="net_weight" className="form-control" placeholder="जैसे: 20 किलो, 500 ग्राम" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">खुराक मात्रा</label>
+                                        <input type="text" name="dosage_amount" className="form-control" placeholder="जैसे: 2" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">खुराक इकाई</label>
+                                        <input type="text" name="dosage_unit" className="form-control" placeholder="जैसे: किलो, मिली" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">खुराक आवृत्ति</label>
+                                        <input type="text" name="dosage_frequency" className="form-control" placeholder="जैसे: दैनिक, साप्ताहिक" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">स्थिति</label>
+                                        <select name="status" className="form-control">
+                                            <option value="Available">उपलब्ध</option>
+                                            <option value="Out of Stock">स्टॉक में नहीं</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                                        <label className="form-label">विवरण</label>
+                                        <textarea name="description" className="form-control" rows="4" placeholder="उत्पाद का विस्तृत विवरण"></textarea>
+                                    </div>
+                                    <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                                        <label className="form-label">सामग्री</label>
+                                        <textarea name="ingredients" className="form-control" rows="3" placeholder="सामग्री की सूची"></textarea>
+                                    </div>
+                                </div>
+                                <div style={{marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end'}}>
+                                    <button type="button" className="btn btn-secondary" onClick={closeModal}>रद्द करें</button>
+                                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                                        {loading ? 'सहेज रहे हैं...' : 'सहेजें'}
+                                    </button>
+                                </div>
+                            </form>
+                        );
+                        break;
+
+                    case 'uploadImages':
+                        modalTitle = 'छवियां अपलोड करें';
+                        modalBody = (
+                            <div>
+                                <div className="form-group">
+                                    <label className="form-label">उत्पाद: {modalContent.data?.title}</label>
+                                    <input 
+                                        type="file" 
+                                        className="form-control" 
+                                        accept="image/*" 
+                                        multiple 
+                                        onChange={(e) => {
+                                            if (e.target.files.length > 0) {
+                                                handleImageUpload(modalContent.data.supplement_id, e.target.files);
+                                            }
+                                        }}
+                                    />
+                                    <small style={{color: '#666', fontSize: '12px'}}>अधिकतम 5 छवियां, प्रत्येक 10MB से कम</small>
+                                </div>
+                                <div style={{marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end'}}>
+                                    <button className="btn btn-secondary" onClick={closeModal}>बंद करें</button>
+                                </div>
+                            </div>
+                        );
+                        break;
+
+                    default:
+                        modalTitle = 'Modal';
+                        modalBody = <div>Content not found</div>;
+                }
+
+                return (
+                    <div className="modal-overlay" onClick={closeModal}>
+                        <div className="modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2 className="modal-title">{modalTitle}</h2>
+                                <button className="close-btn" onClick={closeModal}>
+                                    <i className="fas fa-times"></i>
+                                </button>
+                            </div>
+                            {modalBody}
+                        </div>
+                    </div>
+                );
+            };
+
+            const renderContent = () => {
+                switch (activeSection) {
+                    case 'dashboard':
+                        return renderDashboard();
+                    case 'animals':
+                        return renderAnimals();
+                    case 'products':
+                        return renderSupplements();
+                    case 'orders':
+                        return renderOrders();
+                    default:
+                        return renderDashboard();
+                }
+            };
+
+            // Initialize charts when dashboard is loaded
+            useEffect(() => {
+                if (activeSection === 'dashboard') {
+                    setTimeout(() => {
+                        const ctx = document.getElementById('salesChart');
+                        if (ctx && window.Chart) {
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: ['जन', 'फ़र', 'मार', 'अप्र', 'मई', 'जून'],
+                                    datasets: [{
+                                        label: 'बिक्री (₹)',
+                                        data: [180000, 195000, 210000, 235000, 225000, 245000],
+                                        borderColor: '#ff3b3b',
+                                        backgroundColor: 'rgba(255, 59, 59, 0.1)',
+                                        tension: 0.4,
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                callback: function(value) {
+                                                    return '₹' + (value / 1000) + 'K';
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, 100);
+                }
+            }, [activeSection]);
+
+            return (
+                <div className="admin-container">
+                    {/* Sidebar */}
+                    <div className="sidebar">
+                        <div className="sidebar-header">
+                            <div className="logo">
+                                <i className="fas fa-cow"></i>
+                                <span className="logo-text">पशुपालन मंच</span>
+                            </div>
+                            <div className="admin-title">Admin Panel</div>
+                        </div>
+
+                        <nav className="nav-menu">
+                            <div className="nav-section">
+                                <div className="nav-section-title">Main</div>
+                                <div 
+                                    className={`nav-item ${activeSection === 'dashboard' ? 'active' : ''}`}
+                                    onClick={() => setActiveSection('dashboard')}
+                                >
+                                    <i className="fas fa-chart-line"></i>
+                                    <span>डैशबोर्ड</span>
+                                </div>
+                            </div>
+
+                            <div className="nav-section">
+                                <div className="nav-section-title">Management</div>
+                                <div 
+                                    className={`nav-item ${activeSection === 'animals' ? 'active' : ''}`}
+                                    onClick={() => setActiveSection('animals')}
+                                >
+                                    <i className="fas fa-cow"></i>
+                                    <span>पशु लिस्टिंग</span>
+                                </div>
+                                <div 
+                                    className={`nav-item ${activeSection === 'products' ? 'active' : ''}`}
+                                    onClick={() => setActiveSection('products')}
+                                >
+                                    <i className="fas fa-box"></i>
+                                    <span>उत्पाद</span>
+                                </div>
+                                <div 
+                                    className={`nav-item ${activeSection === 'orders' ? 'active' : ''}`}
+                                    onClick={() => setActiveSection('orders')}
+                                >
+                                    <i className="fas fa-shopping-cart"></i>
+                                    <span>ऑर्डर</span>
+                                </div>
+                            </div>
+
+                            <div className="nav-section">
+                                <div className="nav-section-title">Analytics</div>
+                                <div className="nav-item">
+                                    <i className="fas fa-chart-bar"></i>
+                                    <span>रिपोर्ट्स</span>
+                                </div>
+                                <div className="nav-item">
+                                    <i className="fas fa-rupee-sign"></i>
+                                    <span>वित्तीय</span>
+                                </div>
+                            </div>
+
+                            <div className="nav-section">
+                                <div className="nav-section-title">System</div>
+                                <div className="nav-item">
+                                    <i className="fas fa-cog"></i>
+                                    <span>सेटिंग्स</span>
+                                </div>
+                                <div className="nav-item">
+                                    <i className="fas fa-bell"></i>
+                                    <span>नोटिफिकेशन</span>
+                                </div>
+                                <div className="nav-item" onClick={onLogout}>
+                                    <i className="fas fa-sign-out-alt"></i>
+                                    <span>लॉगआउट</span>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="main-content">
+                        {/* Top Bar */}
+                        <div className="topbar">
+                            <h1 className="page-title">
+                                {activeSection === 'dashboard' && 'डैशबोर्ड'}
+                                {activeSection === 'animals' && 'पशु लिस्टिंग प्रबंधन'}
+                                {activeSection === 'products' && 'उत्पाद प्रबंधन'}
+                                {activeSection === 'orders' && 'ऑर्डर प्रबंधन'}
+                            </h1>
+                            
+                            <div className="topbar-actions">
+                                <button className="notification-btn">
+                                    <i className="fas fa-bell"></i>
+                                    <span className="notification-badge">5</span>
+                                </button>
+                                
+                                <div className="admin-profile">
+                                    <div className="admin-avatar">
+                                        {user?.full_name?.charAt(0) || 'A'}
+                                    </div>
+                                    <span>{user?.full_name || 'Admin'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="content-area">
+                            {renderContent()}
+                        </div>
+                    </div>
+
+                    {/* Modal */}
+                    {renderModal()}
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(false);
+
+            const handleLoginSuccess = (userData) => {
+                setUser(userData);
+                setIsAuthenticated(true);
+            };
+
+            const handleLogout = () => {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                setUser(null);
+                setIsAuthenticated(false);
+            };
+
+            if (loading) {
+                return (
+                    <div className="login-container">
+                        <div className="loading">
+                            <i className="fas fa-spinner fa-spin"></i> लोड हो रहा है...
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <>
+                    {isAuthenticated ? (
+                        <AdminPanel user={user} onLogout={handleLogout} />
+                    ) : (
+                        <AdminLogin onLoginSuccess={handleLoginSuccess} />
+                    )}
+                </>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>
+                
