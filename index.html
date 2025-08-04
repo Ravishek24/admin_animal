@@ -1856,7 +1856,12 @@
                                             <h4>{userCart.user_name || 'अज्ञात उपयोगकर्ता'}</h4>
                                             <div className="user-details">
                                                 <span><i className="fas fa-phone"></i> {userCart.phone_number || 'N/A'}</span>
-                                                <span><i className="fas fa-envelope"></i> {userCart.email || 'N/A'}</span>
+                                                <span><i className="fas fa-map-marker-alt"></i> {userCart.city || 'N/A'}, {userCart.state || 'N/A'}</span>
+                                                {userCart.address && (
+                                                    <span title={userCart.address} style={{cursor: 'help'}}>
+                                                        <i className="fas fa-info-circle"></i> पूरा पता
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="cart-summary">
