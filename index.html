@@ -716,6 +716,163 @@
             gap: 20px;
         }
 
+        /* Pending Carts Styles */
+        .table-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .total-count {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .carts-container {
+            padding: 20px;
+        }
+
+        .cart-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .cart-header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .user-info h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-details {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .user-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-details i {
+            color: #ff3b3b;
+        }
+
+        .cart-summary {
+            text-align: right;
+        }
+
+        .summary-item {
+            margin-bottom: 8px;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-right: 8px;
+        }
+
+        .summary-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cart-items {
+            padding: 20px;
+        }
+
+        .cart-items h5 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .cart-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .cart-items-table th,
+        .cart-items-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-items-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .cart-items-table td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .cart-items-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -750,6 +907,36 @@
 
             .login-card {
                 padding: 30px;
+            }
+
+            /* Mobile styles for pending carts */
+            .cart-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .cart-summary {
+                text-align: left;
+            }
+
+            .cart-items-table {
+                font-size: 12px;
+            }
+
+            .cart-items-table th,
+            .cart-items-table td {
+                padding: 8px 10px;
+            }
+
+            .table-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
             }
         }
 
@@ -1045,6 +1232,7 @@
                 animals: [],
                 supplements: [],
                 orders: [],
+                pendingCarts: [],
                 stats: {
                     totalUsers: 0,
                     activeAnimals: 0,
@@ -1085,6 +1273,9 @@
                             break;
                         case 'orders':
                             await loadOrders();
+                            break;
+                        case 'pending-carts':
+                            await loadPendingCarts();
                             break;
                     }
                 } catch (error) {
@@ -1150,6 +1341,19 @@
                     setData(prev => ({ ...prev, orders: response.data || [] }));
                 } catch (error) {
                     console.error('Error loading orders:', error);
+                }
+            };
+
+            const loadPendingCarts = async () => {
+                try {
+                    const response = await apiCall(`/cart/admin/pending?page=${pagination.currentPage}&limit=30`);
+                    setData(prev => ({ 
+                        ...prev, 
+                        pendingCarts: response.data?.carts || [],
+                        pagination: response.data?.pagination || pagination
+                    }));
+                } catch (error) {
+                    console.error('Error loading pending carts:', error);
                 }
             };
 
@@ -1620,6 +1824,114 @@
                 </div>
             );
 
+            const renderPendingCarts = () => (
+                <div className="table-card">
+                    <div className="table-header">
+                        <h3 className="table-title">पेंडिंग कार्ट रिपोर्ट</h3>
+                        <div className="table-actions">
+                            <span className="total-count">
+                                कुल: {data.pendingCarts.length} उपयोगकर्ता
+                            </span>
+                            <button className="btn btn-primary" onClick={() => window.print()}>
+                                <i className="fas fa-print"></i> प्रिंट रिपोर्ट
+                            </button>
+                        </div>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">
+                            <i className="fas fa-spinner fa-spin"></i> लोड हो रहा है...
+                        </div>
+                    ) : data.pendingCarts.length === 0 ? (
+                        <div className="empty-state">
+                            <i className="fas fa-shopping-basket"></i>
+                            <p>कोई पेंडिंग कार्ट नहीं मिला</p>
+                        </div>
+                    ) : (
+                        <div className="carts-container">
+                            {data.pendingCarts.map((userCart, index) => (
+                                <div key={userCart.user_id} className="cart-card">
+                                    <div className="cart-header">
+                                        <div className="user-info">
+                                            <h4>{userCart.user_name || 'अज्ञात उपयोगकर्ता'}</h4>
+                                            <div className="user-details">
+                                                <span><i className="fas fa-phone"></i> {userCart.phone_number || 'N/A'}</span>
+                                                <span><i className="fas fa-envelope"></i> {userCart.email || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                        <div className="cart-summary">
+                                            <div className="summary-item">
+                                                <span className="label">कुल आइटम:</span>
+                                                <span className="value">{userCart.total_items}</span>
+                                            </div>
+                                            <div className="summary-item">
+                                                <span className="label">कुल राशि:</span>
+                                                <span className="value">₹{userCart.total_amount.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="cart-items">
+                                        <h5>कार्ट आइटम:</h5>
+                                        <table className="cart-items-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>उत्पाद</th>
+                                                    <th>मूल्य</th>
+                                                    <th>मात्रा</th>
+                                                    <th>कुल</th>
+                                                    <th>जोड़ा गया</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {userCart.items.map((item, itemIndex) => (
+                                                    <tr key={`${userCart.user_id}-${itemIndex}`}>
+                                                        <td>{item.supplement_title}</td>
+                                                        <td>₹{item.supplement_price}</td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>₹{(item.price_at_time * item.quantity).toFixed(2)}</td>
+                                                        <td>{new Date(item.added_at).toLocaleDateString('hi-IN')}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ))}
+                            
+                            {/* Pagination */}
+                            {data.pagination && data.pagination.total_pages > 1 && (
+                                <div className="pagination">
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        disabled={!data.pagination.has_prev}
+                                        onClick={() => {
+                                            setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }));
+                                        }}
+                                    >
+                                        <i className="fas fa-chevron-left"></i> पिछला
+                                    </button>
+                                    
+                                    <span className="page-info">
+                                        पेज {data.pagination.current_page} / {data.pagination.total_pages}
+                                    </span>
+                                    
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        disabled={!data.pagination.has_next}
+                                        onClick={() => {
+                                            setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }));
+                                        }}
+                                    >
+                                        अगला <i className="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+
             const renderModal = () => {
                 if (!showModal || !modalContent) return null;
 
@@ -1770,6 +2082,8 @@
                         return renderSupplements();
                     case 'orders':
                         return renderOrders();
+                    case 'pending-carts':
+                        return renderPendingCarts();
                     default:
                         return renderDashboard();
                 }
@@ -1865,6 +2179,13 @@
                                     <i className="fas fa-shopping-cart"></i>
                                     <span>ऑर्डर</span>
                                 </div>
+                                <div 
+                                    className={`nav-item ${activeSection === 'pending-carts' ? 'active' : ''}`}
+                                    onClick={() => setActiveSection('pending-carts')}
+                                >
+                                    <i className="fas fa-shopping-basket"></i>
+                                    <span>पेंडिंग कार्ट</span>
+                                </div>
                             </div>
 
                             <div className="nav-section">
@@ -1906,6 +2227,7 @@
                                 {activeSection === 'animals' && 'पशु लिस्टिंग प्रबंधन'}
                                 {activeSection === 'products' && 'उत्पाद प्रबंधन'}
                                 {activeSection === 'orders' && 'ऑर्डर प्रबंधन'}
+                                {activeSection === 'pending-carts' && 'पेंडिंग कार्ट रिपोर्ट'}
                             </h1>
                             
                             <div className="topbar-actions">
